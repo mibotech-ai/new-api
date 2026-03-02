@@ -3298,5 +3298,13 @@
     "根据 Anthropic 协定，/v1/messages 的输入 tokens 仅统计非缓存输入，不包含缓存读取与缓存写入 tokens。": "Theo quy ước của Anthropic, input tokens của /v1/messages chỉ tính phần đầu vào không dùng cache và không bao gồm tokens đọc/ghi cache.",
     "设计版本": "b80c3466cb6feafeb3990c7820e10e50",
     "未匹配到模型，按回车键可将「{{name}}」作为自定义模型名添加": "Không tìm thấy mô hình khớp. Nhấn Enter để thêm \"{{name}}\" làm tên mô hình tùy chỉnh."
-  }
+  },
+    "一站式 AI 模型 API": "API Mô hình AI Tất-trong-Một",
+    "中转服务": "Dịch vụ Gateway",
+    "Claude、OpenAI、Gemini 统一接入，": "Truy cập thống nhất vào Claude, OpenAI, Gemini,",
+    "付费即取专属 API Key，": "Nhận API Key độc quyền ngay sau khi thanh toán,",
+    "直接调用无需额外配置！": "Tích hợp trực tiếp không cần cấu hình thêm!",
+    "99.9% 在线率": "Thời gian hoạt động 99,9%",
+    "ISO 27001 认证": "Chứng nhận ISO 27001",
+    "即时接入": "Truy cập ngay lập tức"
 }

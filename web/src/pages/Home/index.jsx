@@ -18,50 +18,25 @@ For commercial licensing, please contact support@quantumnous.com
 */
 
 import React, { useContext, useEffect, useState } from 'react';
-import {
-  Button,
-  Typography,
-  Input,
-  ScrollList,
-  ScrollItem,
-} from '@douyinfe/semi-ui';
-import { API, showError, copy, showSuccess } from '../../helpers';
+import { Button, Typography } from '@douyinfe/semi-ui';
+import { API, showError } from '../../helpers';
 import { useIsMobile } from '../../hooks/common/useIsMobile';
-import { API_ENDPOINTS } from '../../constants/common.constant';
 import { StatusContext } from '../../context/Status';
 import { useActualTheme } from '../../context/Theme';
 import { marked } from 'marked';
 import { useTranslation } from 'react-i18next';
 import {
   IconGithubLogo,
-  IconPlay,
   IconFile,
-  IconCopy,
+  IconKey,
+  IconBolt,
+  IconShield,
+  IconTickCircle,
+  IconArrowRight,
 } from '@douyinfe/semi-icons';
 import { Link } from 'react-router-dom';
 import NoticeModal from '../../components/layout/NoticeModal';
-import {
-  Moonshot,
-  OpenAI,
-  XAI,
-  Zhipu,
-  Volcengine,
-  Cohere,
-  Claude,
-  Gemini,
-  Suno,
-  Minimax,
-  Wenxin,
-  Spark,
-  Qingyan,
-  DeepSeek,
-  Qwen,
-  Midjourney,
-  Grok,
-  AzureAI,
-  Hunyuan,
-  Xinference,
-} from '@lobehub/icons';
+import { OpenAI, Claude, Gemini, DeepSeek } from '@lobehub/icons';
 
 const { Text } = Typography;
 
@@ -75,10 +50,6 @@ const Home = () => {
   const isMobile = useIsMobile();
   const isDemoSiteMode = statusState?.status?.demo_site_enabled || false;
   const docsLink = statusState?.status?.docs_link || '';
-  const serverAddress =
-    statusState?.status?.server_address || `${window.location.origin}`;
-  const endpointItems = API_ENDPOINTS.map((e) => ({ value: e }));
-  const [endpointIndex, setEndpointIndex] = useState(0);
   const isChinese = i18n.language.startsWith('zh');
 
   const displayHomePageContent = async () => {
@@ -110,13 +81,6 @@ const Home = () => {
     setHomePageContentLoaded(true);
   };
 
-  const handleCopyBaseURL = async () => {
-    const ok = await copy(serverAddress);
-    if (ok) {
-      showSuccess(t('已复制到剪切板'));
-    }
-  };
-
   useEffect(() => {
     const checkNoticeAndShow = async () => {
       const lastCloseDate = localStorage.getItem('notice_close_date');
@@ -141,13 +105,6 @@ const Home = () => {
     displayHomePageContent().then();
   }, []);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setEndpointIndex((prev) => (prev + 1) % endpointItems.length);
-    }, 3000);
-    return () => clearInterval(timer);
-  }, [endpointItems.length]);
-
   return (
     <div className='w-full overflow-x-hidden'>
       <NoticeModal
@@ -157,182 +114,321 @@ const Home = () => {
       />
       {homePageContentLoaded && homePageContent === '' ? (
         <div className='w-full overflow-x-hidden'>
-          {/* Banner 部分 */}
-          <div className='w-full border-b border-semi-color-border min-h-[500px] md:min-h-[600px] lg:min-h-[700px] relative overflow-x-hidden'>
+          {/* Hero 区 */}
+          <section className='relative pt-32 pb-24 lg:pt-40 lg:pb-32 text-center px-4 overflow-hidden border-b border-semi-color-border'>
             {/* 背景模糊晕染球 */}
             <div className='blur-ball blur-ball-indigo' />
             <div className='blur-ball blur-ball-teal' />
-            <div className='flex items-center justify-center h-full px-4 py-20 md:py-24 lg:py-32 mt-10'>
-              {/* 居中内容区 */}
-              <div className='flex flex-col items-center justify-center text-center max-w-4xl mx-auto'>
-                <div className='flex flex-col items-center justify-center mb-6 md:mb-8'>
-                  <h1
-                    className={`text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-semi-color-text-0 leading-tight ${isChinese ? 'tracking-wide md:tracking-wider' : ''}`}
+
+            <div className='max-w-4xl mx-auto space-y-8 relative z-10'>
+              <h1
+                className={`text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-semi-color-text-0 leading-tight ${isChinese ? 'tracking-wide md:tracking-wider' : ''}`}
+              >
+                <span className='shine-text'>
+                  {t('一站式 AI 模型 API')}
+                  <br />
+                  {t('中转服务')}
+                </span>
+              </h1>
+
+              <p className='text-lg md:text-xl text-semi-color-text-1 max-w-3xl mx-auto leading-relaxed font-normal'>
+                <span className='inline-block'>
+                  {t('Claude、OpenAI、Gemini 统一接入，')}
+                </span>
+                <span className='inline-block'>
+                  {t('付费即取专属 API Key，')}
+                </span>
+                <span className='inline-block'>
+                  {t('直接调用无需额外配置！')}
+                </span>
+              </p>
+
+              {/* CTA 按钮 */}
+              <div className='flex flex-col sm:flex-row justify-center gap-4 mt-10'>
+                <Link to='/console'>
+                  <Button
+                    theme='solid'
+                    type='primary'
+                    size={isMobile ? 'default' : 'large'}
+                    className='!rounded-3xl px-10 py-4'
+                    icon={<IconArrowRight />}
+                    iconPosition='right'
                   >
-                    <>
-                      {t('统一的')}
-                      <br />
-                      <span className='shine-text'>{t('大模型接口网关')}</span>
-                    </>
-                  </h1>
-                  <p className='text-base md:text-lg lg:text-xl text-semi-color-text-1 mt-4 md:mt-6 max-w-xl'>
-                    {t('更好的价格，更好的稳定性，只需要将模型基址替换为：')}
-                  </p>
-                  {/* BASE URL 与端点选择 */}
-                  <div className='flex flex-col md:flex-row items-center justify-center gap-4 w-full mt-4 md:mt-6 max-w-md'>
-                    <Input
-                      readonly
-                      value={serverAddress}
-                      className='flex-1 !rounded-full'
+                    {t('获取密钥')}
+                  </Button>
+                </Link>
+                {isDemoSiteMode && statusState?.status?.version ? (
+                  <Button
+                    size={isMobile ? 'default' : 'large'}
+                    className='!rounded-3xl px-6 py-4'
+                    icon={<IconGithubLogo />}
+                    onClick={() =>
+                      window.open(
+                        'https://github.com/QuantumNous/new-api',
+                        '_blank',
+                      )
+                    }
+                  >
+                    {statusState.status.version}
+                  </Button>
+                ) : (
+                  docsLink && (
+                    <Button
                       size={isMobile ? 'default' : 'large'}
-                      suffix={
-                        <div className='flex items-center gap-2'>
-                          <ScrollList
-                            bodyHeight={32}
-                            style={{ border: 'unset', boxShadow: 'unset' }}
-                          >
-                            <ScrollItem
-                              mode='wheel'
-                              cycled={true}
-                              list={endpointItems}
-                              selectedIndex={endpointIndex}
-                              onSelect={({ index }) => setEndpointIndex(index)}
-                            />
-                          </ScrollList>
-                          <Button
-                            type='primary'
-                            onClick={handleCopyBaseURL}
-                            icon={<IconCopy />}
-                            className='!rounded-full'
-                          />
-                        </div>
-                      }
+                      className='!rounded-3xl px-6 py-4'
+                      icon={<IconFile />}
+                      onClick={() => window.open(docsLink, '_blank')}
+                    >
+                      {t('文档')}
+                    </Button>
+                  )
+                )}
+              </div>
+
+              {/* 特性标签 */}
+              <div className='pt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-sm'>
+                <div className='flex items-center gap-2 text-semi-color-text-2'>
+                  <div
+                    className='w-8 h-8 rounded-full flex items-center justify-center'
+                    style={{
+                      color: 'var(--semi-color-success-light-default)',
+                    }}
+                  >
+                    <IconTickCircle
+                      size='default'
+                      style={{ color: 'var(--semi-color-success)' }}
                     />
                   </div>
+                  <span>{t('99.9% 在线率')}</span>
                 </div>
-
-                {/* 操作按钮 */}
-                <div className='flex flex-row gap-4 justify-center items-center'>
-                  <Link to='/console'>
-                    <Button
-                      theme='solid'
-                      type='primary'
-                      size={isMobile ? 'default' : 'large'}
-                      className='!rounded-3xl px-8 py-2'
-                      icon={<IconPlay />}
-                    >
-                      {t('获取密钥')}
-                    </Button>
-                  </Link>
-                  {isDemoSiteMode && statusState?.status?.version ? (
-                    <Button
-                      size={isMobile ? 'default' : 'large'}
-                      className='flex items-center !rounded-3xl px-6 py-2'
-                      icon={<IconGithubLogo />}
-                      onClick={() =>
-                        window.open(
-                          'https://github.com/QuantumNous/new-api',
-                          '_blank',
-                        )
-                      }
-                    >
-                      {statusState.status.version}
-                    </Button>
-                  ) : (
-                    docsLink && (
-                      <Button
-                        size={isMobile ? 'default' : 'large'}
-                        className='flex items-center !rounded-3xl px-6 py-2'
-                        icon={<IconFile />}
-                        onClick={() => window.open(docsLink, '_blank')}
-                      >
-                        {t('文档')}
-                      </Button>
-                    )
-                  )}
-                </div>
-
-                {/* 框架兼容性图标 */}
-                <div className='mt-12 md:mt-16 lg:mt-20 w-full'>
-                  <div className='flex items-center mb-6 md:mb-8 justify-center'>
-                    <Text
-                      type='tertiary'
-                      className='text-lg md:text-xl lg:text-2xl font-light'
-                    >
-                      {t('支持众多的大模型供应商')}
-                    </Text>
+                <div className='flex items-center gap-2 text-semi-color-text-2'>
+                  <div
+                    className='w-8 h-8 rounded-full flex items-center justify-center'
+                    style={{
+                      color: 'var(--semi-color-success-light-default)',
+                    }}
+                  >
+                    <IconTickCircle
+                      size='default'
+                      style={{ color: 'var(--semi-color-success)' }}
+                    />
                   </div>
-                  <div className='flex flex-wrap items-center justify-center gap-3 sm:gap-4 md:gap-6 lg:gap-8 max-w-5xl mx-auto px-4'>
-                    <div className='w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center'>
-                      <Moonshot size={40} />
+                  <span>{t('ISO 27001 认证')}</span>
+                </div>
+                <div className='flex items-center gap-2 text-semi-color-text-2'>
+                  <div
+                    className='w-8 h-8 rounded-full flex items-center justify-center'
+                    style={{
+                      color: 'var(--semi-color-success-light-default)',
+                    }}
+                  >
+                    <IconTickCircle
+                      size='default'
+                      style={{ color: 'var(--semi-color-success)' }}
+                    />
+                  </div>
+                  <span>{t('即时接入')}</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* 核心平台特色区 */}
+          <section className='py-24 bg-semi-color-bg-0 relative'>
+            <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+              <div className='text-center mb-20'>
+                <h2 className='text-3xl font-bold text-semi-color-text-0 mb-4 tracking-tight'>
+                  {t('核心平台特色')}
+                </h2>
+                <p className='text-semi-color-text-1 max-w-2xl mx-auto text-lg'>
+                  {t('为您构建生产级 AI 应用提供一切所需。')}
+                </p>
+              </div>
+
+              <div className='grid sm:grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8'>
+                {/* 特性卡片 1 */}
+                <div className='group p-8 bg-semi-color-bg-1 rounded-2xl border border-semi-color-border shadow-sm hover:shadow-lg transition-all duration-300'>
+                  <div
+                    className='w-12 h-12 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300'
+                    style={{
+                      background:
+                        'linear-gradient(135deg, var(--semi-color-primary-light-default), var(--semi-color-primary))',
+                      color: '#fff',
+                      boxShadow:
+                        '0 10px 25px -5px rgba(var(--semi-blue-5), 0.3)',
+                    }}
+                  >
+                    <IconKey size='extra-large' />
+                  </div>
+                  <h3 className='text-lg font-bold mb-3 text-semi-color-text-0'>
+                    {t('统一接入，一键获取多模型 API Key')}
+                  </h3>
+                  <p className='text-sm text-semi-color-text-1 leading-relaxed'>
+                    {t(
+                      '全面兼容 OpenAI、Claude 以及 Gemini 等主流节点。只需一个 API 密钥，即可无缝切换全球顶级 AI 模型。',
+                    )}
+                  </p>
+                </div>
+
+                {/* 特性卡片 2 */}
+                <div className='group p-8 bg-semi-color-bg-1 rounded-2xl border border-semi-color-border shadow-sm hover:shadow-lg transition-all duration-300'>
+                  <div
+                    className='w-12 h-12 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300'
+                    style={{
+                      background:
+                        'linear-gradient(135deg, var(--semi-color-secondary-light-default), var(--semi-color-secondary))',
+                      color: '#fff',
+                      boxShadow:
+                        '0 10px 25px -5px rgba(var(--semi-indigo-5), 0.3)',
+                    }}
+                  >
+                    <IconBolt size='extra-large' />
+                  </div>
+                  <h3 className='text-lg font-bold mb-3 text-semi-color-text-0'>
+                    {t('付费即取，密钥实时生效')}
+                  </h3>
+                  <p className='text-sm text-semi-color-text-1 leading-relaxed'>
+                    {t(
+                      '自动化交付流程，支付完成后立即生成专属 API 密钥。告别等待，让您的创意与开发瞬间同步。',
+                    )}
+                  </p>
+                </div>
+
+                {/* 特性卡片 3 */}
+                <div className='group p-8 bg-semi-color-bg-1 rounded-2xl border border-semi-color-border shadow-sm hover:shadow-lg transition-all duration-300'>
+                  <div
+                    className='w-12 h-12 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300'
+                    style={{
+                      background:
+                        'linear-gradient(135deg, var(--semi-color-success-light-default), var(--semi-color-success))',
+                      color: '#fff',
+                      boxShadow:
+                        '0 10px 25px -5px rgba(var(--semi-green-5), 0.3)',
+                    }}
+                  >
+                    <IconShield size='extra-large' />
+                  </div>
+                  <h3 className='text-lg font-bold mb-3 text-semi-color-text-0'>
+                    {t('安全合规，企业级数据信任')}
+                  </h3>
+                  <p className='text-sm text-semi-color-text-1 leading-relaxed'>
+                    {t(
+                      '采用透明代理机制，严格遵循 ISO27001 与 SOC2 认证标准，确保企业级数据的隐私性与调用合规性。',
+                    )}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* 支持的服务商区 */}
+          <section className='py-24 bg-semi-color-bg-0 border-y border-semi-color-border'>
+            <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+              <div className='flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6'>
+                <div>
+                  <h2 className='text-3xl font-bold text-semi-color-text-0 mb-4 tracking-tight'>
+                    {t('支持的服务商')}
+                  </h2>
+                  <p className='text-semi-color-text-1 text-lg'>
+                    {t('即刻连接全球最强大的 AI 模型。')}
+                  </p>
+                </div>
+              </div>
+
+              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
+                {/* Claude 卡片 */}
+                <div className='bg-semi-color-bg-1 p-7 rounded-2xl border border-semi-color-border shadow-sm hover:shadow-lg transition-all duration-300 flex items-center space-x-5'>
+                  <div className='w-12 h-12 bg-orange-50 dark:bg-orange-900/30 rounded-full flex items-center justify-center shrink-0'>
+                    <Claude.Color size={32} />
+                  </div>
+                  <div className='flex-1 min-w-0'>
+                    <div className='flex items-center justify-between mb-0.5'>
+                      <div className='font-bold text-semi-color-text-0 truncate'>
+                        Claude
+                      </div>
+                      <span
+                        className='w-2 h-2 bg-green-500 rounded-full'
+                        title={t('在线')}
+                      ></span>
                     </div>
-                    <div className='w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center'>
-                      <OpenAI size={40} />
+                    <div className='text-sm text-semi-color-text-2'>
+                      Anthropic
                     </div>
-                    <div className='w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center'>
-                      <XAI size={40} />
+                  </div>
+                </div>
+
+                {/* OpenAI 卡片 */}
+                <div className='bg-semi-color-bg-1 p-7 rounded-2xl border border-semi-color-border shadow-sm hover:shadow-lg transition-all duration-300 flex items-center space-x-5'>
+                  <div className='w-12 h-12 bg-emerald-50 dark:bg-emerald-900/30 rounded-full flex items-center justify-center shrink-0'>
+                    <OpenAI size={32} />
+                  </div>
+                  <div className='flex-1 min-w-0'>
+                    <div className='flex items-center justify-between mb-0.5'>
+                      <div className='font-bold text-semi-color-text-0 truncate'>
+                        OpenAI
+                      </div>
+                      <span
+                        className='w-2 h-2 bg-green-500 rounded-full'
+                        title={t('在线')}
+                      ></span>
                     </div>
-                    <div className='w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center'>
-                      <Zhipu.Color size={40} />
+                    <div className='text-sm text-semi-color-text-2'>
+                      GPT-4o, GPT-4
                     </div>
-                    <div className='w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center'>
-                      <Volcengine.Color size={40} />
+                  </div>
+                </div>
+
+                {/* Gemini 卡片 */}
+                <div className='bg-semi-color-bg-1 p-7 rounded-2xl border border-semi-color-border shadow-sm hover:shadow-lg transition-all duration-300 flex items-center space-x-5'>
+                  <div className='w-12 h-12 bg-blue-50 dark:bg-blue-900/30 rounded-full flex items-center justify-center shrink-0'>
+                    <Gemini.Color size={32} />
+                  </div>
+                  <div className='flex-1 min-w-0'>
+                    <div className='flex items-center justify-between mb-0.5'>
+                      <div className='font-bold text-semi-color-text-0 truncate'>
+                        Gemini
+                      </div>
+                      <span
+                        className='w-2 h-2 bg-green-500 rounded-full'
+                        title={t('在线')}
+                      ></span>
                     </div>
-                    <div className='w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center'>
-                      <Cohere.Color size={40} />
+                    <div className='text-sm text-semi-color-text-2'>
+                      Google DeepMind
                     </div>
-                    <div className='w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center'>
-                      <Claude.Color size={40} />
+                  </div>
+                </div>
+
+                {/* DeepSeek 卡片 */}
+                <div className='bg-semi-color-bg-1 p-7 rounded-2xl border border-semi-color-border shadow-sm hover:shadow-lg transition-all duration-300 flex items-center space-x-5'>
+                  <div className='w-12 h-12 bg-gray-50 dark:bg-gray-800 rounded-full flex items-center justify-center shrink-0'>
+                    <DeepSeek.Color size={32} />
+                  </div>
+                  <div className='flex-1 min-w-0'>
+                    <div className='flex items-center justify-between mb-0.5'>
+                      <div className='font-bold text-semi-color-text-0 truncate'>
+                        DeepSeek
+                      </div>
+                      <span
+                        className='w-2 h-2 bg-green-500 rounded-full'
+                        title={t('在线')}
+                      ></span>
                     </div>
-                    <div className='w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center'>
-                      <Gemini.Color size={40} />
-                    </div>
-                    <div className='w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center'>
-                      <Suno size={40} />
-                    </div>
-                    <div className='w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center'>
-                      <Minimax.Color size={40} />
-                    </div>
-                    <div className='w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center'>
-                      <Wenxin.Color size={40} />
-                    </div>
-                    <div className='w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center'>
-                      <Spark.Color size={40} />
-                    </div>
-                    <div className='w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center'>
-                      <Qingyan.Color size={40} />
-                    </div>
-                    <div className='w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center'>
-                      <DeepSeek.Color size={40} />
-                    </div>
-                    <div className='w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center'>
-                      <Qwen.Color size={40} />
-                    </div>
-                    <div className='w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center'>
-                      <Midjourney size={40} />
-                    </div>
-                    <div className='w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center'>
-                      <Grok size={40} />
-                    </div>
-                    <div className='w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center'>
-                      <AzureAI.Color size={40} />
-                    </div>
-                    <div className='w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center'>
-                      <Hunyuan.Color size={40} />
-                    </div>
-                    <div className='w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center'>
-                      <Xinference.Color size={40} />
-                    </div>
-                    <div className='w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center'>
-                      <Typography.Text className='!text-lg sm:!text-xl md:!text-2xl lg:!text-3xl font-bold'>
-                        30+
-                      </Typography.Text>
+                    <div className='text-sm text-semi-color-text-2'>
+                      DeepSeek AI
                     </div>
                   </div>
                 </div>
               </div>
+
+              {/* 完整模型列表提示 */}
+              <div className='mt-8 text-center'>
+                <Text type='tertiary' className='text-sm'>
+                  {t('支持众多的大模型供应商')} • 30+ {t('查看完整模型列表')}
+                </Text>
+              </div>
             </div>
-          </div>
+          </section>
         </div>
       ) : (
         <div className='overflow-x-hidden w-full'>
